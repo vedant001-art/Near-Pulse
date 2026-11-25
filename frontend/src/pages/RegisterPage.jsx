@@ -44,7 +44,11 @@ export default function RegisterPage() {
         setErrorMsg(res.message || 'Registration failed');
       }
     } catch (err) {
-      setErrorMsg(err.response?.data?.message || 'Registration error');
+      if (!err.response) {
+        setErrorMsg('Network error: Unable to connect to backend API. Please verify VITE_API_URL and ensure your Render backend is running.');
+      } else {
+        setErrorMsg(err.response?.data?.message || 'Registration error');
+      }
     } finally {
       setLoading(false);
     }

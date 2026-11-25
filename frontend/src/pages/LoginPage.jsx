@@ -30,7 +30,11 @@ export default function LoginPage() {
         setErrorMsg(res.message || 'Invalid credentials');
       }
     } catch (err) {
-      setErrorMsg(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      if (!err.response) {
+        setErrorMsg('Network error: Unable to connect to backend API. Please verify VITE_API_URL and ensure your Render backend is running.');
+      } else {
+        setErrorMsg(err.response?.data?.message || 'Invalid email or password.');
+      }
     } finally {
       setLoading(false);
     }
