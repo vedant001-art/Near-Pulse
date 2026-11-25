@@ -1,0 +1,31 @@
+{
+  "name": "nearpulse-local-amenities-platform",
+  "version": "1.0.0",
+  "description": "Local Amenities Discovery and Subscription Platform for Students and Working Professionals",
+  "scripts": {
+    "install:all": "npm --prefix backend install && npm --prefix frontend install",
+    "backend": "npm --prefix backend start",
+    "backend:dev": "npm --prefix backend run dev",
+    "frontend": "npm --prefix frontend run dev",
+    "prisma:push": "npm --prefix backend run prisma:push",
+    "prisma:seed": "npm --prefix backend run seed",
+    "build": "npm --prefix frontend run build"
+  },
+  "keywords": [
+    "amenities",
+    "subscriptions",
+    "mess",
+    "tiffin",
+    "pg",
+    "hostel",
+    "gym",
+    "leaflet",
+    "razorpay",
+    "react",
+    "express",
+    "postgresql",
+    "prisma"
+  ],
+  "author": "NearPulse Team",
+  "license": "ISC"
+}

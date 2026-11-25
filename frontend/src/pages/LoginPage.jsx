@@ -1,0 +1,123 @@
+import React, { useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { MapPin, Lock, Mail, ArrowRight, AlertCircle } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+
+export default function LoginPage() {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
+  const redirectUrl = searchParams.get('redirect') || '/';
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMsg('');
+
+    try {
+      const res = await login(email, password);
+      if (res.success) {
+        if (res.user.role === 'ADMIN') navigate('/admin');
+        else if (res.user.role === 'SERVICE_PROVIDER') navigate('/provider');
+        else navigate(redirectUrl);
+      } else {
+        setErrorMsg(res.message || 'Invalid credentials');
+      }
+    } catch (err) {
+      setErrorMsg(err.response?.data?.message || 'Login failed. Please check your credentials.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
+        <Link to="/" className="inline-flex items-center gap-2.5">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-sky-400 flex items-center justify-center text-white shadow-md">
+            <MapPin className="w-5 h-5" />
+          </div>
+          <span className="text-2xl font-black text-slate-900 tracking-tight">
+            Near<span className="text-brand-600">Pulse</span>
+          </span>
+        </Link>
+        <h2 className="mt-4 text-2xl font-extrabold text-slate-900">Sign In to Your Account</h2>
+        <p className="mt-1 text-xs text-slate-500">
+          Or{' '}
+          <Link to="/register" className="font-semibold text-brand-600 hover:text-brand-700">
+            create a new account for free
+          </Link>
+        </p>
+      </div>
+
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4">
+        <div className="bg-white py-8 px-6 shadow-xl border border-slate-200/80 sm:rounded-3xl">
+          {errorMsg && (
+            <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+              <span>{errorMsg}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+            <div>
+              <label className="block font-semibold text-slate-700 mb-1">Email Address</label>
+              <div className="relative">
+                <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="name@example.com"
+                  className="w-full pl-9 pr-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block font-semibold text-slate-700">Password</label>
+                <Link to="/forgot-password" className="text-[11px] font-semibold text-brand-600 hover:underline">
+                  Forgot password?
+                </Link>
+              </div>
+              <div className="relative">
+                <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full pl-9 pr-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-2 disabled:opacity-50 mt-2"
+            >
+              {loading ? (
+                <span>Signing in...</span>
+              ) : (
+                <>
+                  <span>Sign In</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
