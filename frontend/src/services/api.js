@@ -1,9 +1,15 @@
 import axios from 'axios';
 
 const getBaseUrl = () => {
-  if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
-  if (import.meta.env.DEV) return '/api';
-  return 'https://nearpulse-backend.onrender.com/api';
+  let url = import.meta.env.VITE_API_URL;
+  if (!url || typeof url !== 'string' || !url.trim()) {
+    return import.meta.env.DEV ? '/api' : 'https://nearpulse-backend.onrender.com/api';
+  }
+  url = url.trim().replace(/\/+$/, '');
+  if (!url.endsWith('/api') && url.startsWith('http')) {
+    url = `${url}/api`;
+  }
+  return url;
 };
 
 const api = axios.create({
